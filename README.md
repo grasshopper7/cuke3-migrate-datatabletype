@@ -80,9 +80,9 @@ Refer to [LecturePrimitiveEnum](https://github.com/grasshopper7/cuke2-parameter-
 
 DataTable TO List of Object with other objects as fields – This is where things get interesting. In Cucumber 2, one could write the code in the stepdefinition method or work with XStream to convert to the object.
 
-Refer to Professor and  ProfessorXStreamConverter
-Refer to Topic and TopicXStreamConverter
-Refer to Rooms and RoomsXStreamConverter
+Refer to [Professor](https://github.com/grasshopper7/cuke2-parameter-datatable/blob/master/cuke2-parameter-datatable/src/test/java/dataobject/Professor.java) and  [ProfessorXStreamConverter](https://github.com/grasshopper7/cuke2-parameter-datatable/blob/master/cuke2-parameter-datatable/src/test/java/transformer/ProfessorXStreamConverter.java)
+Refer to [Topic](https://github.com/grasshopper7/cuke2-parameter-datatable/blob/master/cuke2-parameter-datatable/src/test/java/dataobject/Topic.java) and [TopicXStreamConverter](https://github.com/grasshopper7/cuke2-parameter-datatable/blob/master/cuke2-parameter-datatable/src/test/java/transformer/TopicXStreamConverter.java)
+Refer to [Rooms](https://github.com/grasshopper7/cuke2-parameter-datatable/blob/master/cuke2-parameter-datatable/src/test/java/dataobject/Rooms.java) and [RoomsXStreamConverter](https://github.com/grasshopper7/cuke2-parameter-datatable/blob/master/cuke2-parameter-datatable/src/test/java/transformer/RoomsXStreamConverter.java)
 
 	Given the list lecture details are
 	| profName | topic         | size | frequency | rooms     |
@@ -113,37 +113,18 @@ Refer to Rooms and RoomsXStreamConverter
 
 In Cucumber 3 this is easier to accomplish, at least the amount of code is reduced. The scenario, step definition and dataobjects remain the same.  All we need to do is to register a new DataTableType.
 
-Refer to Lecture
+Refer to [Lecture](https://github.com/grasshopper7/cuke3-migrate-datatabletype/blob/master/cuke3-migrate-datatabletype/src/test/java/dataobject/Lecture.java) for relevant code.
 
-registry.defineDataTableType(new DataTableType(Lecture.class, new TableEntryTransformer<Lecture>() {
-	@Override
-	public Lecture transform(Map<String, String> entry) {
-		return Lecture.createLecture(entry);
-	}
-}));
+	registry.defineDataTableType(new DataTableType(Lecture.class, new TableEntryTransformer<Lecture>() {
+		@Override
+		public Lecture transform(Map<String, String> entry) {
+			return Lecture.createLecture(entry);
+		}
+	}));
 
-public class Lecture {
-	private Professor profName;
-	private Topic topic;
-	private int size;
-	private int frequency;
-	private Rooms rooms;
-	//Getter setter methods
+DataTable without header TO List of Object (or any other collection) - In Cucumber 2, the way out is to accept a List<List<String>> as a parameter to the stepdefinition method and write the conversion code to the desired collection. 
 
-public static Lecture createLecture(Map<String, String> entry) {
-		Lecture lecture = new Lecture();
-		lecture.setProfName(new Professor(entry.get("profName")));
-		lecture.setSize(Integer.parseInt(entry.get("size")));
-		lecture.setFrequency(Integer.parseInt(entry.get("frequency")));
-		lecture.setRooms(Rooms.parseRooms(entry.get("rooms")));
-		lecture.setTopic(Topic.parseTopic(entry.get("topic")));
-		return lecture;
-	}
-}
-
-DataTable without header  List of Object (or any other collection) - In Cucumber 2, the way out is to accept a List<List<String>> as a parameter to the stepdefinition method and write the conversion code to the desired collection. 
-
-Refer to LectureLite
+Refer to [LectureLite](https://github.com/grasshopper7/cuke2-parameter-datatable/blob/master/cuke2-parameter-datatable/src/test/java/dataobject/LectureLite.java) for relevant code.
 
   Scenario: XStream datatable scenario List<LectureLite>
     Given the list no header lecture details are
@@ -156,48 +137,26 @@ public void theListNoHeaderLectureDetailsAre(List<List<String>> lectstrs) {
 		lectlite.add(LectureLite.createLectureLite(row));		
 }
 
-public static LectureLite createLectureLite(List<String> row) {
-	LectureLite lecture = new LectureLite();
-	Professor prof = new Professor();
-	prof.setProfName(row.get(0));
-	lecture.setProfName(prof);
-	lecture.setTopic(Topic.parseTopic(row.get(1)));
-	lecture.setSize(Integer.parseInt(row.get(2)));
-	lecture.setFrequency(Integer.parseInt(row.get(3)));
-	lecture.setRooms(Rooms.parseRooms(row.get(4)));
-	return lecture;
-}
-
 In Cucumber 3, we need to add a DataTableType with the TableRowTransformer for conversion which handles DataTable without headers. We are using LectureLite in place of Lecture as the same class cannot be registered with different transformers.
 
-Refer to LectureLite
+Refer to [LectureLite](https://github.com/grasshopper7/cuke3-migrate-datatabletype/blob/master/cuke3-migrate-datatabletype/src/test/java/dataobject/LectureLite.java) for relevant code.
 
-@Given("the list no header lecture details are")
-public void theListNoHeaderLectureDetailsAre(List<LectureLite> lectures) {	
-}
-
-registry.defineDataTableType(new DataTableType(LectureLite.class, new TableRowTransformer<LectureLite>() {
-	@Override
-	public LectureLite transform(List<String> row) throws Throwable {
-		return LectureLite.createLectureLite(row);
+	@Given("the list no header lecture details are")
+		public void theListNoHeaderLectureDetailsAre(List<LectureLite> lectures) {	
 	}
-}));
 
-public static LectureLite createLectureLite(List<String> row) {
-	LectureLite lecture = new LectureLite();
-	lecture.setProfName(new Professor(row.get(0)));
-	lecture.setTopic(Topic.parseTopic(row.get(1)));
-	lecture.setSize(Integer.parseInt(row.get(2)));
-	lecture.setFrequency(Integer.parseInt(row.get(3)));
-	lecture.setRooms(Rooms.parseRooms(row.get(4)));
-	return lecture;
-}
+	registry.defineDataTableType(new DataTableType(LectureLite.class, new TableRowTransformer<LectureLite>() {
+		@Override
+		public LectureLite transform(List<String> row) throws Throwable {
+			return LectureLite.createLectureLite(row);
+		}
+	}));
 
-DataTable with 2 columns  Map with primitive key and value – There is no need to write code for Cucumber 2 or Cucumber 3. This will be handled automatically.
+DataTable with 2 columns TO Map with primitive key and value – There is no need to write code for Cucumber 2 or Cucumber 3. This will be handled automatically.
 
-DataTable with 2 columns  Map with custom object key and value – In Cucumber 2, XStream will automatically convert it using the single argument constructor or we can set up a XStream converter. In Cucumber 3, we need to register new DataTableType.
+DataTable with 2 columns TO Map with custom object key and value – In Cucumber 2, XStream will automatically convert it using the single argument constructor or we can set up a XStream converter. In Cucumber 3, we need to register new DataTableType.
 
-DataTable with more than 2 columns  Map with primitive key and custom object value – In Cucumber 2, automatic conversion only works for 2 columns. The stepdefinition method needs to accept a List<List<String>> as a parameter and write the conversion code to a Map. Notice that the DataTable does not have headers.
+DataTable with more than 2 columns TO Map with primitive key and custom object value – In Cucumber 2, automatic conversion only works for 2 columns. The stepdefinition method needs to accept a List<List<String>> as a parameter and write the conversion code to a Map. Notice that the DataTable does not have headers.
 
 Refer to Lecture
 
