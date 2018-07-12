@@ -52,10 +52,10 @@ Let us look at DataTableType constructor in more detail. TableTransformer is jus
 There are 4 types of TableTransformer - TableEntryTransformer, TableRowTransformer, TableCellTransformer, TableTransformer.
 
 	Transformer Type		Parameter passed to transform()		Usage scenarios
-	TableEntryTransformer	Map<String, String>					Transform DataTable containing header
-	TableRowTransformer		List<String>						Transform DataTable without header
-	TableCellTransformer	String								Transform a single cell into object
-	TableTransformer		DataTable							Transform a whole table
+	TableEntryTransformer		Map<String, String>			Transform DataTable containing header
+	TableRowTransformer		List<String>				Transform DataTable without header
+	TableCellTransformer		String					Transform a single cell into object
+	TableTransformer		DataTable				Transform a whole table
 
 
 DataTable  List of list of primitives – There is no need to write code for Cucumber 2 or Cucumber 3. This will be handled automatically.
