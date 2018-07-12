@@ -16,42 +16,50 @@ What is DataTableType? - This contains the transformation code for converting th
 
 Let us look at some Cucumber 2 code for converting a DataTable into a list of objects.
 
-        Refer to LecturePrimitive
-        Scenario:
-        Given the list primitive lecture details are
-        | profName | size | profLevel  |
-        | Jane     |   40 | Assistant  |
-        | Doe      |   30 | Associate  |
+Refer to [LecturePrimitive](https://github.com/grasshopper7/cuke2-parameter-datatable/blob/master/cuke2-parameter-datatable/src/test/java/dataobject/LecturePrimitive.java) for relevant code.
 
-          @Given("the list primitive lecture details are")
+	Given the list primitive lecture details are
+    | profName | size | profLevel  |
+    | Jane     |   40 | Assistant  |
+    | Doe      |   30 | Associate  |
+
+    @Given("the list primitive lecture details are")
     public void thePrimitiveLectureDetailsAre(List<LecturePrimitive> lectures) {
       //Returns a list of LecturePrimitive objects
     }
 
 Now if we use this same piece of code in Cucumber 3 we will get this error.
-cucumber.runtime.CucumberException: Could not convert arguments for step [the list primitive lecture details are] defined at 'stepdef.XStreamStepDefinition.thePrimitiveLectureDetailsAre(LecturePrimitive>) in file:/C:/Users/mounish/git/cuke3migrate/cuke3-migrate/target/test-classes/'.It appears you did not register a data table type 
+
+	cucumber.runtime.CucumberException: Could not convert arguments for step [the list primitive lecture details are] defined at ......... It appears you did not register a data table type 
 
 Let us look at Cucumber 3 code by adding a DataTableType for conversion in the same configureTypeRegistry() method where the ParameterType is defined.
-registry.defineDataTableType(new DataTableType(LecturePrimitive.class, new TableEntryTransformer<LecturePrimitive>() {
-	@Override
-	public LecturePrimitive transform(Map<String, String> entry) {
-		return LecturePrimitive.createLecture(entry);
-	}
-}));
-This will output the same result as in the earlier cucumber versions.
+
+	registry.defineDataTableType(new DataTableType(LecturePrimitive.class, new TableEntryTransformer<LecturePrimitive>() {
+		@Override
+		public LecturePrimitive transform(Map<String, String> entry) {
+			return LecturePrimitive.createLecture(entry);
+		}
+	}));
+	
+This will now output the same result as in the earlier cucumber versions.
+
 Let us look at DataTableType constructor in more detail. TableTransformer is just a placeholder for specific transformer; it is not an interface or abstract class.
-DataTableType
-LecturePrimitive.class, -> Desired object class
-TableTransformer -> Transformation code
+
+	DataTableType
+	LecturePrimitive.class, -> Desired object class
+	TableTransformer -> Transformation code
 
 There are 4 types of TableTransformer - TableEntryTransformer, TableRowTransformer, TableCellTransformer, TableTransformer.
-Transformer Type	Parameter passed to transform() method	Usage scenarios
-TableEntryTransformer	Map<String, String>	Transform DataTable containing header
-TableRowTransformer	List<String>	Transform DataTable without header
-TableCellTransformer	String	Transform a single cell into object
-TableTransformer	DataTable	Transform a whole table
+
+	Transformer Type		Parameter passed to transform()		Usage scenarios
+	TableEntryTransformer	Map<String, String>					Transform DataTable containing header
+	TableRowTransformer		List<String>						Transform DataTable without header
+	TableCellTransformer	String								Transform a single cell into object
+	TableTransformer		DataTable							Transform a whole table
+
 
 DataTable  List of list of primitives – There is no need to write code for Cucumber 2 or Cucumber 3. This will be handled automatically.
+
 DataTable  List of Object with primitive fields – This is the case mentioned above. To repeat, no need to write code for Cucumber 2. In Cucumber 3, a custom transformer has to be written as a DataTableType.
 DataTable  List of Object with primitive and enum fields – In Cucumber 2 this will be handled automatically. In Cucumber 3, the custom transformer will need to mention the code to wire the enum field in the object.
 Refer to LecturePrimitiveEnum
