@@ -2,7 +2,7 @@ Work in Progress -- XStream in Java Cucumber implementation is dead. No more try
 
 For the official announcement mentioning other goodies, wander to this link - https://cucumber.io/blog/2018/05/19/announcing-cucumber-jvm-3-0-0.
 
-For the release notes navigate to - https://github.com/cucumber/cucumber-jvm/blob/master/CHANGELOG.md and scroll down to the 3.0.0-SNAPSHOT section. In this check out point 2 where annotations like @Delimiter, @Format, @Transformer,@XStreamConverter, @XStreamConverters are laid to rest. These must be replaced by a DataTableType or ParameterType.
+For the release notes navigate to - https://github.com/cucumber/cucumber-jvm/blob/master/CHANGELOG.md and scroll down to the 3.0.0-SNAPSHOT section.
 
 For details on Cucumber Expressions which have been introduced to work alongside Regular Expressions refer to this - https://docs.cucumber.io/cucumber/cucumber-expressions/
 
@@ -10,7 +10,7 @@ Source Code – Have tried to add the relevant code portions in the article. For
 
 Refer to [cuke2-parameter-datatable](https://github.com/grasshopper7/cuke2-parameter-datatable) link for Cucumber 2. Scenarios are contained in [parameter.feature](https://github.com/grasshopper7/cuke2-parameter-datatable/blob/master/cuke2-parameter-datatable/src/test/resources/features/parameter.feature). Step Definition in [ParameterStepDefinition.java](https://github.com/grasshopper7/cuke2-parameter-datatable/blob/master/cuke2-parameter-datatable/src/test/java/stepdef/ParameterStepDefinition.java). 
 
-Refer to [cuke3-migrate-datatabletype](https://github.com/grasshopper7/cuke3-migrate-datatabletype) for Cucumber 3. Scenarios are contained in [datatabletype.feature](https://github.com/grasshopper7/cuke3-migrate-datatabletype/blob/master/cuke3-migrate-datatabletype/src/test/resources/features/datatabletype.feature). Step Definition code in [DataTableTypeStepDefinition.java](https://github.com/grasshopper7/cuke3-migrate-datatabletype/blob/master/cuke3-migrate-datatabletype/src/test/java/stepdef/DataTableTypeStepDefinition.java). Parameter registration code in [Configurer.java](https://github.com/grasshopper7/cuke3-migrate-datatabletype/blob/master/cuke3-migrate-datatabletype/src/test/java/stepdef/Configurer.java).
+Refer to [cuke3-migrate-datatabletype](https://github.com/grasshopper7/cuke3-migrate-datatabletype) for Cucumber 3. Scenarios are contained in [datatabletype.feature](https://github.com/grasshopper7/cuke3-migrate-datatabletype/blob/master/cuke3-migrate-datatabletype/src/test/resources/features/datatabletype.feature). Step Definition code in [DataTableTypeStepDefinition.java](https://github.com/grasshopper7/cuke3-migrate-datatabletype/blob/master/cuke3-migrate-datatabletype/src/test/java/stepdef/DataTableTypeStepDefinition.java). DataTableType registration code in [Configurer.java](https://github.com/grasshopper7/cuke3-migrate-datatabletype/blob/master/cuke3-migrate-datatabletype/src/test/java/stepdef/Configurer.java).
 
 What is DataTableType? - This contains the transformation code for converting the table cell, row or whole table to the mentioned object. This takes the place of XStream conversion but now we also need to take care of table data conversion to objects which were earlier automatic.
 
@@ -19,9 +19,9 @@ Let us look at some Cucumber 2 code for converting a DataTable into a list of ob
 Refer to [LecturePrimitive](https://github.com/grasshopper7/cuke2-parameter-datatable/blob/master/cuke2-parameter-datatable/src/test/java/dataobject/LecturePrimitive.java) for relevant code.
 
 	Given the list primitive lecture details are
-    | profName | size | profLevel  |
-    | Jane     |   40 | Assistant  |
-    | Doe      |   30 | Associate  |
+    	| profName | size | profLevel  |
+    	| Jane     |   40 | Assistant  |
+    	| Doe      |   30 | Associate  |
 
     @Given("the list primitive lecture details are")
     public void thePrimitiveLectureDetailsAre(List<LecturePrimitive> lectures) {
@@ -58,151 +58,58 @@ There are 4 types of TableTransformer - TableEntryTransformer, TableRowTransform
 	TableTransformer		DataTable				Transform a whole table
 
 
-DataTable  List of list of primitives – There is no need to write code for Cucumber 2 or Cucumber 3. This will be handled automatically.
+DataTable TO List of list of primitives – There is no need to write code for Cucumber 2 or Cucumber 3. This will be handled automatically.
 
-DataTable  List of Object with primitive fields – This is the case mentioned above. To repeat, no need to write code for Cucumber 2. In Cucumber 3, a custom transformer has to be written as a DataTableType.
-DataTable  List of Object with primitive and enum fields – In Cucumber 2 this will be handled automatically. In Cucumber 3, the custom transformer will need to mention the code to wire the enum field in the object.
-Refer to LecturePrimitiveEnum
-public enum ProfLevels {  ASSISTANT, ASSOCIATE, PROFESSOR	}
-public class LecturePrimitiveEnum {
-	private String profName;	
-	private int size;		
-	private ProfLevels profLevel;
-	//Getter setter methods
+DataTable TO List of Object with primitive fields – This is the case mentioned above. To repeat, no need to write code for Cucumber 2. In Cucumber 3, a custom transformer has to be written as a DataTableType.
 
-public static LecturePrimitiveEnum createLecture(Map<String, String> entry) {
-		LecturePrimitiveEnum lecture = new LecturePrimitiveEnum();
-		lecture.setProfName(entry.get("profName"));
-		lecture.setSize(Integer.parseInt(entry.get("size")));
-lecture.setProfLevel(ProfLevels.valueOf(entry.get("profLevel").toUpperCase()));
-	return lecture;
-}
-}
+DataTable TO List of Object with primitive and enum fields – In Cucumber 2 this will be handled automatically. In Cucumber 3, the custom transformer will need to mention the code to wire the enum field in the object.
 
-Scenario:
-   Given the list primitive enum lecture details are
-      | profName | size | profLevel  |
-      | Jane     |   40 | Assistant  |
-      | Doe      |   30 | Associate  |
+Refer to [LecturePrimitiveEnum](https://github.com/grasshopper7/cuke2-parameter-datatable/blob/master/cuke2-parameter-datatable/src/test/java/dataobject/LecturePrimitiveEnum.java) for relevant code.
 
-@Given("the list primitive enum lecture details are")
-public void thePrimitiveEnumLectureDetailsAre(List<LecturePrimitiveEnum> lectures) {
-	//Returns a list of LecturePrimitiveEnum objects
-}
+	public enum ProfLevels {  ASSISTANT, ASSOCIATE, PROFESSOR	}
 
-DataTable  List of Object with other objects as fields – This is where things get interesting. In Cucumber 2, one could write the code in the stepdefinition method or work with XStream to convert to the object.
+	Given the list primitive enum lecture details are
+    | profName | size | profLevel  |
+    | Jane     |   40 | Assistant  |
+    | Doe      |   30 | Associate  |
+
+	@Given("the list primitive enum lecture details are")
+	public void thePrimitiveEnumLectureDetailsAre(List<LecturePrimitiveEnum> lectures) {
+		//Returns a list of LecturePrimitiveEnum objects
+	}
+
+DataTable TO List of Object with other objects as fields – This is where things get interesting. In Cucumber 2, one could write the code in the stepdefinition method or work with XStream to convert to the object.
 
 Refer to Professor and  ProfessorXStreamConverter
 Refer to Topic and TopicXStreamConverter
 Refer to Rooms and RoomsXStreamConverter
 
-Scenario: XStream datatable scenario List<Lecture>
-  Given the list lecture details are
-     | profName | topic         | size | frequency | rooms     |
-     | Jack     | A1:Topic One  |   40 |         3 | 101A,302C |
-     | Daniels  | B5:Topic Five |   30 |         2 | 220E,419D |
+	Given the list lecture details are
+	| profName | topic         | size | frequency | rooms     |
+   	| Jack     | A1:Topic One  |   40 |         3 | 101A,302C |
+   	| Daniels  | B5:Topic Five |   30 |         2 | 220E,419D |
 
+	@Given("^the lecture details are$")
+	public void theLectureDetailsAre(List<Lecture> lectures) {
+		//List of Lecture objects
+	}
 
-@Given("^the lecture details are$")
-public void theLectureDetailsAre(List<Lecture> lectures) {
-	//List of Lecture objects
-}
-
-//Global registration on runner
-@XStreamConverters({
-	@XStreamConverter(value = ProfessorXStreamConverter.class),
-	@XStreamConverter(value = RoomsXStreamConverter.class),
-	@XStreamConverter(value = TopicXStreamConverter.class)
+	//Global registration on runner
+	@XStreamConverters({
+		@XStreamConverter(value = ProfessorXStreamConverter.class),
+		@XStreamConverter(value = RoomsXStreamConverter.class),
+		@XStreamConverter(value = TopicXStreamConverter.class)
 	})
-@RunWith(Cucumber.class)
+	@RunWith(Cucumber.class)
 
-public class Lecture {
-	private Professor profName;
-	private Topic topic;
-	private int size;
-	private int frequency;
-	private Rooms rooms;
-	//Getter setter methods
-}
-
-public class Professor {
-	private String profName;
-}
-
-public class ProfessorXStreamConverter extends AbstractSingleValueConverter implements Converter {
-
-	@Override
-	public boolean canConvert(Class cls) {
-		return Professor.class.isAssignableFrom(cls);}
-
-	@Override
-	public Object fromString(String inputName) {		
-		return Professor.parseProfessor(inputName);}
-	
-	@Override
-	public void marshal(Object value, HierarchicalStreamWriter writer, MarshallingContext context) {
-        writer.setValue(((Professor) value).toString());}
-
-	@Override
-    public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-		return Professor.parseProfessor(reader.getValue());}
-}
-
-public class Topic {	
-	private String code;	
-	private String name;
-
-public static Topic parseTopic(String top) {
-		String[] topicData = top.split(":");
-		Topic topic = new Topic(topicData[0],topicData[1]);		
-		return topic;
+	public class Lecture {
+		private Professor profName;
+		private Topic topic;
+		private int size;
+		private int frequency;
+		private Rooms rooms;
+		//Getter setter methods
 	}
-}
-
-public class TopicXStreamConverter implements Converter {
-
-	@Override
-	public boolean canConvert(Class cls) {
-		return Topic.class.isAssignableFrom(cls);	}
-
-	
-	@Override
-	public void marshal(Object value, HierarchicalStreamWriter writer, MarshallingContext context) {
-        writer.setValue(((Topic) value).toString());    }
-
-	@Override
-    public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-		return Topic.parseTopic(reader.getValue());    }
-}
-
-public class Rooms {
-	private List<Room> rooms;
-
-public static Rooms parseRooms(String rooms) {
-		return new Rooms( Arrays.stream(rooms.split(",")).map(Room::new).collect(Collectors.toList()));
-	}
-}
-
-public class Room {
-	private String roomNumber;
-}
-
-public class RoomsXStreamConverter implements Converter {
-
-	@Override
-	public boolean canConvert(Class cls) {
-		//return cls.equals(Rooms.class);
-		return Rooms.class.isAssignableFrom(cls);	}
-
-	@Override
-	public void marshal(Object value, HierarchicalStreamWriter writer, MarshallingContext context) {
-        //Rooms  rooms = (Rooms) value;
-        writer.setValue(((Rooms) value).toString());    }
-
-	@Override
-    public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-		return Rooms.parseRooms(reader.getValue());    }
-}
 
 In Cucumber 3 this is easier to accomplish, at least the amount of code is reduced. The scenario, step definition and dataobjects remain the same.  All we need to do is to register a new DataTableType.
 
