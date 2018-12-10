@@ -12,6 +12,7 @@ import dataobject.LectureId;
 import dataobject.LectureLite;
 import dataobject.LecturePrimitive;
 import dataobject.LecturePrimitiveEnum;
+import dataobject.LectureSimple;
 import dataobject.Lectures;
 import dataobject.Professor;
 import dataobject.ProfLevels;
@@ -45,6 +46,13 @@ public class Configurer implements TypeRegistryConfigurer {
 			@Override
 			public LecturePrimitiveEnum transform(Map<String, String> entry) {
 				return LecturePrimitiveEnum.createLecture(entry);
+			}
+		}));
+		
+		registry.defineDataTableType(new DataTableType(LectureSimple.class, new TableEntryTransformer<LectureSimple>() {
+			@Override
+			public LectureSimple transform(Map<String, String> entry) {
+				return LectureSimple.createLecture(entry);
 			}
 		}));
 
