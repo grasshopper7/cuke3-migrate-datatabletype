@@ -64,21 +64,41 @@ DataTable TO List of list of primitives – There is no need to write code for C
 
 DataTable TO List of Object with primitive fields – This is the case mentioned above. To repeat, no need to write code for Cucumber 2. In Cucumber 3, a custom transformer has to be written as a DataTableType.
 
-DataTable TO List of Object with primitive and enum fields – In Cucumber 2 this will be handled automatically. In Cucumber 3, the custom transformer will need to mention the code to wire the enum field in the object.
+DataTable TO List of Object with primitive and enum fields – In Cucumber 2 this will be handled automatically. In Cucumber 3, the custom transformer will need to mention the code to wire the object.
 
 Refer to [LecturePrimitiveEnum](https://github.com/grasshopper7/cuke2-parameter-datatable/blob/master/cuke2-parameter-datatable/src/test/java/dataobject/LecturePrimitiveEnum.java) for relevant code.
 
-	public enum ProfLevels {  ASSISTANT, ASSOCIATE, PROFESSOR	}
+	public enum ProfLevels {  ASSISTANT, ASSOCIATE, PROFESSOR  }
 
 	Given the list primitive enum lecture details are
-    | profName | size | profLevel  |
-    | Jane     |   40 | Assistant  |
-    | Doe      |   30 | Associate  |
+	| profName | size | profLevel  |
+	| Jane     |   40 | Assistant  |
+	| Doe      |   30 | Associate  |
+    
+    	registry.defineDataTableType(new DataTableType(LecturePrimitiveEnum.class, 
+        new TableEntryTransformer<LecturePrimitiveEnum>() {
+		@Override
+		public LecturePrimitiveEnum transform(Map<String, String> entry) {
+			return LecturePrimitiveEnum.createLecture(entry);
+		}
+	}));
 
 	@Given("the list primitive enum lecture details are")
 	public void thePrimitiveEnumLectureDetailsAre(List<LecturePrimitiveEnum> lectures) {
 		//Returns a list of LecturePrimitiveEnum objects
 	}
+
+DataTable TO List of Object with primitive and object and enum fields – In Cucumber 2 this will be handled automatically. In Cucumber 3, the custom transformer will need to mention the code to wire the object. Similar approach as above point.
+
+Refer to [LectureSimple](https://github.com/grasshopper7/cuke2-parameter-datatable/blob/master/cuke2-parameter-datatable/src/test/java/dataobject/LectureSimple.java) for relevant code.
+   
+    	registry.defineDataTableType(new DataTableType(LectureSimple.class, 
+        new TableEntryTransformer<LectureSimple>() {
+		@Override
+		public LectureSimple transform(Map<String, String> entry) {
+			return LectureSimple.createLecture(entry);
+		}
+	}));
 
 DataTable TO List of Object with other objects as fields – This is where things get interesting. In Cucumber 2, one could write the code in the stepdefinition method or work with XStream to convert to the object.
 
