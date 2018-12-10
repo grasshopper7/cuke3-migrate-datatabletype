@@ -88,7 +88,7 @@ Refer to [LecturePrimitiveEnum](https://github.com/grasshopper7/cuke2-parameter-
 		//Returns a list of LecturePrimitiveEnum objects
 	}
 
-DataTable TO List of Object with primitive and simple obejct and enum fields – In Cucumber 2 this will be handled automatically. In Cucumber 3, the custom transformer will need to mention the code to wire the object. Similar approach as above point.
+DataTable TO List of Object with primitive and object and enum fields – In Cucumber 2 this will be handled automatically. In Cucumber 3, the custom transformer will need to mention the code to wire the object. Similar approach as above point.
 
 Refer to [LectureSimple](https://github.com/grasshopper7/cuke2-parameter-datatable/blob/master/cuke2-parameter-datatable/src/test/java/dataobject/LectureSimple.java) for relevant code.
    
