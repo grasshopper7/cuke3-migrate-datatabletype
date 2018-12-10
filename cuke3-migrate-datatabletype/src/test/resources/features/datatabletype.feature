@@ -17,7 +17,7 @@ Feature: DataTable Conversion for Cucumber-JVM 3
       | Jane     |   40 | Assistant |
       | Doe      |   30 | Associate |
 
-  Scenario: DataTable scenario simple object List<LectureSimple>
+  Scenario: DataTable scenario primitive & object & enum List<LectureSimple>
     Given the list simple lecture object details are
       | profName | size | profLevel |
       | Jane     |   40 | ASSISTANT |
