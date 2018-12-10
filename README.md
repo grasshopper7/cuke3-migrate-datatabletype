@@ -68,12 +68,20 @@ DataTable TO List of Object with primitive and enum fields – In Cucumber 2 thi
 
 Refer to [LecturePrimitiveEnum](https://github.com/grasshopper7/cuke2-parameter-datatable/blob/master/cuke2-parameter-datatable/src/test/java/dataobject/LecturePrimitiveEnum.java) for relevant code.
 
-	public enum ProfLevels {  ASSISTANT, ASSOCIATE, PROFESSOR	}
+	public enum ProfLevels {  ASSISTANT, ASSOCIATE, PROFESSOR  }
 
 	Given the list primitive enum lecture details are
-    | profName | size | profLevel  |
-    | Jane     |   40 | Assistant  |
-    | Doe      |   30 | Associate  |
+	| profName | size | profLevel  |
+	| Jane     |   40 | Assistant  |
+	| Doe      |   30 | Associate  |
+    
+    	registry.defineDataTableType(new DataTableType(LecturePrimitiveEnum.class, 
+        new TableEntryTransformer<LecturePrimitiveEnum>() {
+		@Override
+		public LecturePrimitiveEnum transform(Map<String, String> entry) {
+			return LecturePrimitiveEnum.createLecture(entry);
+		}
+	}));
 
 	@Given("the list primitive enum lecture details are")
 	public void thePrimitiveEnumLectureDetailsAre(List<LecturePrimitiveEnum> lectures) {
