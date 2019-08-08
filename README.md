@@ -1,4 +1,4 @@
-Refer here for a detailed explanation - http://grasshopper.tech/117/
+Refer here for a detailed explanation - https://grasshopper.tech/117/
 
 XStream in Java Cucumber implementation is dead. No more trying to decide whether to extend AbstractSingleValueConverter or implement Converter. This has been replaced by the concept of ParameterType and DataTableType.
 
